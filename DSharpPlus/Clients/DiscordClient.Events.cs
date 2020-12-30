@@ -509,6 +509,13 @@ namespace DSharpPlus
             remove => this._voiceServerUpdated.Unregister(value);
         }
         private AsyncEvent<DiscordClient, VoiceServerUpdateEventArgs> _voiceServerUpdated;
+        
+        public event AsyncEventHandler<DiscordClient, InteractionTriggeredEventArgs> InteractionTriggered
+        {
+            add => this._interactionTriggered.Register(value);
+            remove => this._interactionTriggered.Unregister(value);
+        }
+        private AsyncEvent<DiscordClient, InteractionTriggeredEventArgs> _interactionTriggered;
 
         #endregion
 

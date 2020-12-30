@@ -292,6 +292,14 @@ namespace DSharpPlus
                     break;
 
                 #endregion
+                
+                #region Interaction
+                
+                case "interaction_create":
+                    await OnInteractionTriggeredEventAsync(dat.ToDiscordObject<DiscordInteraction>());
+                    break;
+                
+                #endregion
 
                 #region Misc
 
@@ -1708,7 +1716,21 @@ namespace DSharpPlus
         }
 
         #endregion
-
+        
+        #region Interaction
+        
+        internal async Task OnInteractionTriggeredEventAsync(DiscordInteraction interaction)
+        {
+            interaction.Discord = this;
+            var ea = new InteractionTriggeredEventArgs
+            {
+                Interaction = interaction
+            };
+            await this._interactionTriggered.InvokeAsync(this, ea).ConfigureAwait(false);
+        }
+        
+        #endregion
+    
         #region Misc
 
         internal async Task OnTypingStartEventAsync(ulong userId, ulong channelId, DiscordChannel channel, ulong? guildId, DateTimeOffset started, TransportMember mbr)

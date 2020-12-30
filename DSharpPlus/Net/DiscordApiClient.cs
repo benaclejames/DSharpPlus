@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -594,6 +595,18 @@ namespace DSharpPlus.Net
 
             var url = Utilities.GetApiUriFor(path);
             return this.DoRequestAsync(this.Discord, bucket, url, RestRequestMethod.DELETE, route, headers);
+        }
+
+        internal async Task<ConfiguredTaskAwaitable<RestResponse>> RespondToInteractionAsync(string interaction_id, string interaction_token,
+            DiscordInteractionResponse response)
+        {
+            var headers = Utilities.GetBaseHeaders();
+
+            var route = $"{Endpoints.INTERACTIONS}/:interaction_id/:interaction_token/callback";
+            var bucket = this.Discord.ApiClient.Rest.GetBucket(RestRequestMethod.POST, route, new { interaction_id, interaction_token }, out var path);
+            
+            var url = Utilities.GetApiUriFor(path);
+            return this.DoRequestAsync(this.Discord, bucket, url, RestRequestMethod.POST, route, headers, payload: DiscordJson.SerializeObject(response)).ConfigureAwait(false);
         }
 
         internal async Task<DiscordMessage> GetMessageAsync(ulong channel_id, ulong message_id)
