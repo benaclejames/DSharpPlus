@@ -21,7 +21,13 @@ namespace DSharpPlus.Entities
                 [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
                 public string Key { get; internal set; }
             }
-            
+
+            public class InteractionMember
+            {
+                [JsonProperty("user", NullValueHandling = NullValueHandling.Ignore)]
+                public DiscordUser User;
+            }
+
             [JsonProperty("options", NullValueHandling = NullValueHandling.Ignore)]
             public List<SingleParam> Options { get; internal set; }
             
@@ -54,7 +60,7 @@ namespace DSharpPlus.Entities
         /// Gets the entity that triggered the interaction.
         /// </summary>
         [JsonProperty("member", NullValueHandling = NullValueHandling.Ignore)]
-        public DiscordMember Instigator { get; internal set; }
+        public InteractionParameters.InteractionMember Instigator { get; internal set; }
 
         /// <summary>
         /// Gets the ID of the guild where this interaction was invoked.
