@@ -36,6 +36,15 @@ namespace DSharpPlus.Net.Abstractions
         public IEnumerable<RestChannelCreatePayload> Channels { get; set; }
     }
 
+    internal sealed class RestGuildCreateFromTemplatePayload
+    {
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+
+        [JsonProperty("icon", NullValueHandling = NullValueHandling.Include)]
+        public Optional<string> IconBase64 { get; set; }
+    }
+
     internal sealed class RestGuildModifyPayload
     {
         [JsonProperty("name")]
@@ -196,5 +205,26 @@ namespace DSharpPlus.Net.Abstractions
         
         [JsonProperty("channel_id", NullValueHandling = NullValueHandling.Ignore)]
         public ulong? ChannelId { get; set; }
+    }
+
+    internal class RestGuildTemplateCreateOrModifyPayload
+    {
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Include)]
+        public string Name { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Include)]
+        public string Description { get; set; }
+    }
+
+    internal class RestGuildMembershipScreeningFormModifyPayload
+    {
+        [JsonProperty("enabled", NullValueHandling = NullValueHandling.Ignore)]
+        public Optional<bool> Enabled { get; set; }
+
+        [JsonProperty("form_fields", NullValueHandling = NullValueHandling.Ignore)]
+        public Optional<DiscordGuildMembershipScreeningField[]> Fields { get; set; }
+
+        [JsonProperty("description", NullValueHandling = NullValueHandling.Ignore)]
+        public Optional<string> Description { get; set; }
     }
 }

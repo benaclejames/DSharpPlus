@@ -67,7 +67,7 @@ namespace DSharpPlus
         /// <summary>
         /// Gets the intents configured for this client.
         /// </summary>
-        public DiscordIntents? Intents
+        public DiscordIntents Intents
             => this.Configuration.Intents;
 
         /// <summary>
@@ -116,13 +116,9 @@ namespace DSharpPlus
             if (this.Configuration.MessageCacheSize > 0)
             {
                 var intents = this.Configuration.Intents;
-
-                if (intents.HasValue)
-                    this.MessageCache = intents.Value.HasIntent(DiscordIntents.GuildMessages) || intents.Value.HasIntent(DiscordIntents.DirectMessages)
+                this.MessageCache = intents.HasIntent(DiscordIntents.GuildMessages) || intents.HasIntent(DiscordIntents.DirectMessages)
                         ? new RingBuffer<DiscordMessage>(this.Configuration.MessageCacheSize)
                         : null;
-                else
-                    this.MessageCache = new RingBuffer<DiscordMessage>(this.Configuration.MessageCacheSize); //This will need to be changed once intents become mandatory.
             }
 
             this.InternalSetup();
@@ -140,7 +136,6 @@ namespace DSharpPlus
             this._ready = new AsyncEvent<DiscordClient, ReadyEventArgs>("READY", EventExecutionLimit, this.EventErrorHandler);
             this._resumed = new AsyncEvent<DiscordClient, ReadyEventArgs>("RESUMED", EventExecutionLimit, this.EventErrorHandler);
             this._channelCreated = new AsyncEvent<DiscordClient, ChannelCreateEventArgs>("CHANNEL_CREATED", EventExecutionLimit, this.EventErrorHandler);
-            this._dmChannelCreated = new AsyncEvent<DiscordClient, DmChannelCreateEventArgs>("DM_CHANNEL_CREATED", EventExecutionLimit, this.EventErrorHandler);
             this._channelUpdated = new AsyncEvent<DiscordClient, ChannelUpdateEventArgs>("CHANNEL_UPDATED", EventExecutionLimit, this.EventErrorHandler);
             this._channelDeleted = new AsyncEvent<DiscordClient, ChannelDeleteEventArgs>("CHANNEL_DELETED", EventExecutionLimit, this.EventErrorHandler);
             this._dmChannelDeleted = new AsyncEvent<DiscordClient, DmChannelDeleteEventArgs>("DM_CHANNEL_DELETED", EventExecutionLimit, this.EventErrorHandler);
@@ -366,16 +361,53 @@ namespace DSharpPlus
         /// </summary>
         /// <param name="channel">Channel to send to.</param>
         /// <param name="content">Message content to send.</param>
-        /// <param name="isTTS">Whether the message is to be read using TTS.</param>
-        /// <param name="embed">Embed to attach to the message.</param>
-        /// <param name="mentions">Allowed mentions in the message</param>
         /// <returns>The Discord Message that was sent.</returns>
-        /// <exception cref="Exceptions.UnauthorizedException">Thrown when the client does not have the <see cref="Permissions.SendMessages"/> permission if <paramref name="isTTS"/> is false and <see cref="Permissions.SendTtsMessages"/> if <paramref name="isTTS"/> is true.</exception>
+        /// <exception cref="Exceptions.UnauthorizedException">Thrown when the client does not have the <see cref="Permissions.SendMessages"/> permission.</exception>
         /// <exception cref="Exceptions.NotFoundException">Thrown when the channel does not exist.</exception>
         /// <exception cref="Exceptions.BadRequestException">Thrown when an invalid parameter was provided.</exception>
         /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
-        public Task<DiscordMessage> SendMessageAsync(DiscordChannel channel, string content = null, bool isTTS = false, DiscordEmbed embed = null, IEnumerable<IMention> mentions = null)
-            => this.ApiClient.CreateMessageAsync(channel.Id, content, isTTS, embed, mentions);
+        public Task<DiscordMessage> SendMessageAsync(DiscordChannel channel, string content = null)
+            => this.ApiClient.CreateMessageAsync(channel.Id, content, null);
+
+        /// <summary>
+        /// Sends a message
+        /// </summary>
+        /// <param name="channel">Channel to send to.</param>
+        /// <param name="embed">Embed to attach to the message.</param>
+        /// <returns>The Discord Message that was sent.</returns>
+        /// <exception cref="Exceptions.UnauthorizedException">Thrown when the client does not have the <see cref="Permissions.SendMessages"/> permission.</exception>
+        /// <exception cref="Exceptions.NotFoundException">Thrown when the channel does not exist.</exception>
+        /// <exception cref="Exceptions.BadRequestException">Thrown when an invalid parameter was provided.</exception>
+        /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
+        public Task<DiscordMessage> SendMessageAsync(DiscordChannel channel, DiscordEmbed embed = null)
+            => this.ApiClient.CreateMessageAsync(channel.Id, null, embed);
+
+        /// <summary>
+        /// Sends a message
+        /// </summary>
+        /// <param name="channel">Channel to send to.</param>
+        /// <param name="content">Message content to send.</param>
+        /// <param name="embed">Embed to attach to the message.</param>
+        /// <returns>The Discord Message that was sent.</returns>
+        /// <exception cref="Exceptions.UnauthorizedException">Thrown when the client does not have the <see cref="Permissions.SendMessages"/> permission.</exception>
+        /// <exception cref="Exceptions.NotFoundException">Thrown when the channel does not exist.</exception>
+        /// <exception cref="Exceptions.BadRequestException">Thrown when an invalid parameter was provided.</exception>
+        /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
+        public Task<DiscordMessage> SendMessageAsync(DiscordChannel channel, string content = null, DiscordEmbed embed = null)
+            => this.ApiClient.CreateMessageAsync(channel.Id, content, embed);
+
+        /// <summary>
+        /// Sends a message
+        /// </summary>
+        /// <param name="channel">Channel to send to.</param>
+        /// <param name="builder">The Discord Mesage builder.</param>
+        /// <returns>The Discord Message that was sent.</returns>
+        /// <exception cref="Exceptions.UnauthorizedException">Thrown when the client does not have the <see cref="Permissions.SendMessages"/> permission if TTS is false and <see cref="Permissions.SendTtsMessages"/> if TTS is true.</exception>
+        /// <exception cref="Exceptions.NotFoundException">Thrown when the channel does not exist.</exception>
+        /// <exception cref="Exceptions.BadRequestException">Thrown when an invalid parameter was provided.</exception>
+        /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
+        public Task<DiscordMessage> SendMessageAsync(DiscordChannel channel, DiscordMessageBuilder builder)
+            => this.ApiClient.CreateMessageAsync(channel.Id, builder);
 
         /// <summary>
         /// Creates a guild. This requires the bot to be in less than 10 guilds total.
@@ -400,6 +432,27 @@ namespace DSharpPlus
                 iconb64 = null;
 
             return this.ApiClient.CreateGuildAsync(name, region, iconb64, verificationLevel, defaultMessageNotifications);
+        }
+
+        /// <summary>
+        /// Creates a guild from a template. This requires the bot to be in less than 10 guilds total.
+        /// </summary>
+        /// <param name="code">The template code.</param>
+        /// <param name="name">Name of the guild.</param>
+        /// <param name="icon">Stream containing the icon for the guild.</param>
+        /// <returns>The created guild.</returns>
+        /// <exception cref="Exceptions.BadRequestException">Thrown when an invalid parameter was provided.</exception>
+        /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
+        public Task<DiscordGuild> CreateGuildFromTemplateAsync(string code, string name, Optional<Stream> icon = default)
+        {
+            var iconb64 = Optional.FromNoValue<string>();
+            if (icon.HasValue && icon.Value != null)
+                using (var imgtool = new ImageTool(icon.Value))
+                    iconb64 = imgtool.GetBase64();
+            else if (icon.HasValue)
+                iconb64 = null;
+
+            return this.ApiClient.CreateGuildFromTemplateAsync(code, name, iconb64);
         }
 
         /// <summary>
@@ -514,6 +567,16 @@ namespace DSharpPlus
             this.CurrentUser.AvatarHash = usr.AvatarHash;
             return this.CurrentUser;
         }
+
+        /// <summary>
+        /// Gets a guild template by the code.
+        /// </summary>
+        /// <param name="code">The code of the template.</param>
+        /// <returns>The guild template for the code.</returns>
+        /// <exception cref="Exceptions.BadRequestException">Thrown when an invalid parameter was provided.</exception>
+        /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
+        public Task<DiscordGuildTemplate> GetTemplateAsync(string code)
+            => this.ApiClient.GetTemplateAsync(code);
         #endregion
 
         #region Internal Caching Methods
@@ -554,6 +617,30 @@ namespace DSharpPlus
 
                 message.Author = this.UpdateUser(usr, guild?.Id, guild, member);
             }
+
+            var channel = this.InternalGetCachedChannel(message.ChannelId);
+
+            if (channel != null) return;
+            
+            if (!message.GuildId.HasValue)
+            {
+                channel = new DiscordDmChannel
+                {
+                    Id = message.ChannelId,
+                    Discord = this,
+                    Type = ChannelType.Private
+                };
+            }
+            else 
+            {
+                channel = new DiscordChannel
+                {
+                    Id = message.ChannelId,
+                    Discord = this
+                };
+            }
+            
+            message.Channel = channel;
         }
 
         private DiscordUser UpdateUser(DiscordUser usr, ulong? guildId, DiscordGuild guild, TransportMember mbr)
@@ -579,18 +666,18 @@ namespace DSharpPlus
 
                 DiscordMember member = default;
 
-                if (intents?.HasAllPrivilegedIntents() == false || guild.IsLarge) // we have the necessary privileged intents, no need to worry about caching here unless guild is large.
+                if (!intents.HasAllPrivilegedIntents() || guild.IsLarge) // we have the necessary privileged intents, no need to worry about caching here unless guild is large.
                 {
                     if (guild?._members.TryGetValue(usr.Id, out member) == false)
                     {
-                        if (intents?.HasIntent(DiscordIntents.GuildMembers) == true || this.Configuration.AlwaysCacheMembers) // member can be updated by events, so cache it
+                        if (intents.HasIntent(DiscordIntents.GuildMembers) || this.Configuration.AlwaysCacheMembers) // member can be updated by events, so cache it
                         {
                             guild._members.TryAdd(usr.Id, (DiscordMember)usr);
                         }
                     }
-                    else if ((intents?.HasIntent(DiscordIntents.GuildPresences) == true) || this.Configuration.AlwaysCacheMembers) // we can attempt to update it if it's already in cache.
+                    else if (intents.HasIntent(DiscordIntents.GuildPresences) || this.Configuration.AlwaysCacheMembers) // we can attempt to update it if it's already in cache.
                     {
-                        if (intents?.HasIntent(DiscordIntents.GuildMembers) == false) // no need to update if we already have the member events
+                        if (!intents.HasIntent(DiscordIntents.GuildMembers)) // no need to update if we already have the member events
                         {
                             _ = guild._members.TryUpdate(usr.Id, (DiscordMember)usr, member);
                         }
@@ -674,8 +761,6 @@ namespace DSharpPlus
             guild.AfkChannelId = newGuild.AfkChannelId;
             guild.AfkTimeout = newGuild.AfkTimeout;
             guild.DefaultMessageNotifications = newGuild.DefaultMessageNotifications;
-            guild.EmbedChannelId = newGuild.EmbedChannelId;
-            guild.EmbedEnabled = newGuild.EmbedEnabled;
             guild.Features = newGuild.Features;
             guild.IconHash = newGuild.IconHash;
             guild.MfaLevel = newGuild.MfaLevel;
@@ -712,6 +797,44 @@ namespace DSharpPlus
             // - guild.MemberCount = Math.Max(new_guild.MemberCount, guild._members.Count);
             // - guild.Unavailable = new_guild.Unavailable;
         }
+
+        private void PopulateMessageReactionsAndCache(DiscordMessage message, TransportUser author, TransportMember member)
+        {
+            this.UpdateMessage(message, author, message.Channel?.Guild, member);
+
+            if (message._reactions == null)
+                message._reactions = new List<DiscordReaction>();
+            foreach (var xr in message._reactions)
+                xr.Emoji.Discord = this;
+
+            if (this.Configuration.MessageCacheSize > 0 && message.Channel != null)
+                this.MessageCache?.Add(message);
+        }
+
+        private void PopulateMessageMentions(DiscordMessage message, DiscordGuild guild)
+        {
+            var mentionedUsers = new List<DiscordUser>();
+            var mentionedRoles = guild != null ? new List<DiscordRole>() : null;
+            var mentionedChannels = guild != null ? new List<DiscordChannel>() : null;
+            if (!string.IsNullOrWhiteSpace(message.Content))
+            {
+                if (guild != null)
+                {
+                    mentionedUsers = Utilities.GetUserMentions(message).Select(xid => guild._members.TryGetValue(xid, out var member) ? member : new DiscordUser { Id = xid, Discord = this }).Cast<DiscordUser>().ToList();
+                    mentionedRoles = Utilities.GetRoleMentions(message).Select(xid => guild.GetRole(xid)).ToList();
+                    mentionedChannels = Utilities.GetChannelMentions(message).Select(xid => guild.GetChannel(xid)).ToList();
+                }
+                else
+                {
+                    mentionedUsers = Utilities.GetUserMentions(message).Select(this.GetCachedOrEmptyUserInternal).ToList();
+                }
+            }
+
+            message._mentionedUsers = mentionedUsers;
+            message._mentionedRoles = mentionedRoles;
+            message._mentionedChannels = mentionedChannels;
+        }
+
 
         #endregion
 

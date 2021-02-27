@@ -111,7 +111,7 @@ namespace DSharpPlus
             this._webSocketClient.ExceptionThrown += SocketOnException;
 
             var gwuri = new QueryUriBuilder(this.GatewayUri)
-                .AddParameter("v", "6")
+                .AddParameter("v", "8")
                 .AddParameter("encoding", "json");
 
             if (this.Configuration.GatewayCompressionLevel == GatewayCompressionLevel.Stream)
@@ -141,7 +141,7 @@ namespace DSharpPlus
 
                         ms.Position = 0;
                         using (var sr = new StreamReader(ms, Utilities.UTF8))
-                            msg = sr.ReadToEnd();
+                            msg = await sr.ReadToEndAsync().ConfigureAwait(false);
                     }
                 }
 
@@ -439,8 +439,7 @@ namespace DSharpPlus
             var payloadstr = JsonConvert.SerializeObject(payload);
             await this.WsSendAsync(payloadstr).ConfigureAwait(false);
 
-            if (this.Configuration.Intents.HasValue)
-                this.Logger.LogDebug(LoggerEvents.Intents, "Registered gateway intents ({0})", this.Configuration.Intents.Value);
+            this.Logger.LogDebug(LoggerEvents.Intents, "Registered gateway intents ({0})", this.Configuration.Intents);
         }
 
         internal async Task SendResumeAsync()

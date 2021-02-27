@@ -56,6 +56,16 @@ namespace DSharpPlus
             => this.ApiClient.CreateGuildAsync(name, region_id, iconb64, verification_level, default_message_notifications);
 
         /// <summary>
+        /// Creates a guild from a template. This requires the bot to be in less than 10 guilds total.
+        /// </summary>
+        /// <param name="code">The template code.</param>
+        /// <param name="name">Name of the guild.</param>
+        /// <param name="icon">Stream containing the icon for the guild.</param>
+        /// <returns>The created guild.</returns>
+        public Task<DiscordGuild> CreateGuildFromTemplateAsync(string code, string name, string icon)
+            => this.ApiClient.CreateGuildFromTemplateAsync(code, name, icon);
+
+        /// <summary>
         /// Deletes a guild
         /// </summary>
         /// <param name="id">guild id</param>
@@ -300,6 +310,27 @@ namespace DSharpPlus
         /// <returns></returns>
         public Task<DiscordWidgetSettings> ModifyGuildWidgetSettingsAsync(ulong guild_id, bool? enabled = null, ulong? channel_id = null, string reason = null)
             => this.ApiClient.ModifyGuildWidgetSettingsAsync(guild_id, enabled, channel_id, reason);
+
+        /// <summary>
+        /// Gets a guild's membership screening form.
+        /// </summary>
+        /// <param name="guild_id">Guild id</param>
+        /// <returns>The guild's membership screening form.</returns>
+        public Task<DiscordGuildMembershipScreening> GetGuildMembershipScreeningFormAsync(ulong guild_id)
+            => this.ApiClient.GetGuildMembershipScreeningFormAsync(guild_id);
+
+        /// <summary>
+        /// Modifies a guild's membership screening form.
+        /// </summary>
+        /// <param name="guild_id">Guild id</param>
+        /// <param name="action">Action to perform</param>
+        /// <returns>The modified screening form.</returns>
+        public async Task<DiscordGuildMembershipScreening> ModifyGuildMembershipScreeningFormAsync(ulong guild_id, Action<MembershipScreeningEditModel> action)
+        {
+            var mdl = new MembershipScreeningEditModel();
+            action(mdl);
+            return await this.ApiClient.ModifyGuildMembershipScreeningFormAsync(guild_id, mdl.Enabled, mdl.Fields, mdl.Description);
+        }
         #endregion
 
         #region Channel
@@ -390,39 +421,37 @@ namespace DSharpPlus
         /// </summary>
         /// <param name="channel_id">Channel id</param>
         /// <param name="content">Message (text) content</param>
-        /// <param name="tts">Whether this message is a text-to-speech message</param>
-        /// <param name="embed">Embed to attach</param>
-        /// <param name="mentions">Allowed mentions in the message</param>
         /// <returns></returns>
-        public Task<DiscordMessage> CreateMessageAsync(ulong channel_id, string content, bool? tts, DiscordEmbed embed, IEnumerable<IMention> mentions)
-            => this.ApiClient.CreateMessageAsync(channel_id, content, tts, embed, mentions);
+        public Task<DiscordMessage> CreateMessageAsync(ulong channel_id, string content)
+            => this.ApiClient.CreateMessageAsync(channel_id, content, null);
 
         /// <summary>
-        /// Uploads a file
+        /// Sends a message
         /// </summary>
         /// <param name="channel_id">Channel id</param>
-        /// <param name="file_data">File data</param>
-        /// <param name="file_name">File name</param>
-        /// <param name="content">Message (text) content</param>
-        /// <param name="tts">Whether this message is a text-to-speech message</param>
         /// <param name="embed">Embed to attach</param>
-        /// <param name="mentions">Allowed mentions in the message</param>
         /// <returns></returns>
-        public Task<DiscordMessage> UploadFileAsync(ulong channel_id, Stream file_data, string file_name, string content, bool? tts, DiscordEmbed embed, IEnumerable<IMention> mentions)
-            => this.ApiClient.UploadFileAsync(channel_id, file_data, file_name, content, tts, embed, mentions);
+        public Task<DiscordMessage> CreateMessageAsync(ulong channel_id, DiscordEmbed embed)
+            => this.ApiClient.CreateMessageAsync(channel_id, null, embed);
 
         /// <summary>
-        /// Uploads multiple files
+        /// Sends a message
         /// </summary>
         /// <param name="channel_id">Channel id</param>
-        /// <param name="files">Files to attach (filename, data)</param>
         /// <param name="content">Message (text) content</param>
-        /// <param name="tts">Whether this message is a text-to-speech message</param>
         /// <param name="embed">Embed to attach</param>
-        /// <param name="mentions">Allowed mentions in the message</param>
         /// <returns></returns>
-        public Task<DiscordMessage> UploadFilesAsync(ulong channel_id, Dictionary<string, Stream> files, string content, bool? tts, DiscordEmbed embed, IEnumerable<IMention> mentions)
-            => this.ApiClient.UploadFilesAsync(channel_id, files, content, tts, embed, mentions);
+        public Task<DiscordMessage> CreateMessageAsync(ulong channel_id, string content, DiscordEmbed embed)
+            => this.ApiClient.CreateMessageAsync(channel_id, content, embed);
+
+        /// <summary>
+        /// Sends a message
+        /// </summary>
+        /// <param name="channel_id">Channel id</param>
+        /// <param name="builder">The Discord Mesage builder.</param>
+        /// <returns></returns>
+        public Task<DiscordMessage> CreateMessageAsync(ulong channel_id, DiscordMessageBuilder builder)
+            => this.ApiClient.CreateMessageAsync(channel_id, builder);
 
         /// <summary>
         /// Gets channels from a guild
@@ -459,10 +488,34 @@ namespace DSharpPlus
         /// <param name="channel_id">Channel id</param>
         /// <param name="message_id">Message id</param>
         /// <param name="content">New message content</param>
+        /// <returns></returns>
+        public Task<DiscordMessage> EditMessageAsync(ulong channel_id, ulong message_id, Optional<string> content)
+            => this.ApiClient.EditMessageAsync(channel_id, message_id, content, default, default);
+
+        /// <summary>
+        /// Edits a message
+        /// </summary>
+        /// <param name="channel_id">Channel id</param>
+        /// <param name="message_id">Message id</param>
         /// <param name="embed">New message embed</param>
         /// <returns></returns>
-        public Task<DiscordMessage> EditMessageAsync(ulong channel_id, ulong message_id, Optional<string> content, Optional<DiscordEmbed> embed, IEnumerable<IMention> mentions)
-            => this.ApiClient.EditMessageAsync(channel_id, message_id, content, embed, mentions);
+        public Task<DiscordMessage> EditMessageAsync(ulong channel_id, ulong message_id, Optional<DiscordEmbed> embed)
+            => this.ApiClient.EditMessageAsync(channel_id, message_id, default, embed, default);
+
+        /// <summary>
+        /// Edits a message
+        /// </summary>
+        /// <param name="channel_id">Channel id</param>
+        /// <param name="message_id">Message id</param>
+        /// <param name="builder">The builder of the message to edit.</param>
+        /// <returns></returns>
+        public async Task<DiscordMessage> EditMessageAsync(ulong channel_id, ulong message_id, DiscordMessageBuilder builder)
+        {
+            if (builder.Files.Any())
+                throw new ArgumentException("You cannot add files when modifing a message.");
+
+            return await this.ApiClient.EditMessageAsync(channel_id, message_id, builder.Content, builder.Embed, builder.Mentions).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Deletes a message
@@ -918,23 +971,6 @@ namespace DSharpPlus
             => this.ApiClient.SyncGuildIntegrationAsync(guild_id, integration_id);
 
         /// <summary>
-        /// Gets guild embed
-        /// </summary>
-        /// <param name="guild_id">Guild id</param>
-        /// <returns></returns>
-        public Task<DiscordGuildEmbed> GetGuildEmbedAsync(ulong guild_id)
-            => this.ApiClient.GetGuildEmbedAsync(guild_id);
-
-        /// <summary>
-        /// Modifies a guild embed
-        /// </summary>
-        /// <param name="guild_id">Guild id</param>
-        /// <param name="embed">New guild embed</param>
-        /// <returns></returns>
-        public Task<DiscordGuildEmbed> ModifyGuildEmbedAsync(ulong guild_id, DiscordGuildEmbed embed)
-            => this.ApiClient.ModifyGuildEmbedAsync(guild_id, embed);
-
-        /// <summary>
         /// Get a guild's voice region
         /// </summary>
         /// <param name="guild_id">Guild id</param>
@@ -949,6 +985,53 @@ namespace DSharpPlus
         /// <returns></returns>
         public Task<IReadOnlyList<DiscordInvite>> GetGuildInvitesAsync(ulong guild_id)
             => this.ApiClient.GetGuildInvitesAsync(guild_id);
+
+        /// <summary>
+        /// Gets a guild's templates.
+        /// </summary>
+        /// <param name="guild_id">Guild id</param>
+        /// <returns>All of the guild's templates.</returns>
+        public Task<IReadOnlyList<DiscordGuildTemplate>> GetGuildTemplatesAsync(ulong guild_id)
+            => this.ApiClient.GetGuildTemplatesAsync(guild_id);
+
+        /// <summary>
+        /// Creates a guild template.
+        /// </summary>
+        /// <param name="guild_id">Guild id</param>
+        /// <param name="name">Name of the template.</param>
+        /// <param name="description">Description of the template.</param>
+        /// <returns>The template created.</returns>
+        public Task<DiscordGuildTemplate> CreateGuildTemplateAsync(ulong guild_id, string name, string description = null)
+            => this.ApiClient.CreateGuildTemplateAsync(guild_id, name, description);
+
+        /// <summary>
+        /// Syncs the template to the current guild's state.
+        /// </summary>
+        /// <param name="guild_id">Guild id</param>
+        /// <param name="code">The code of the template to sync.</param>
+        /// <returns>The template synced.</returns>
+        public Task<DiscordGuildTemplate> SyncGuildTemplateAsync(ulong guild_id, string code)
+            => this.ApiClient.SyncGuildTemplateAsync(guild_id, code);
+
+        /// <summary>
+        /// Modifies the template's metadata.
+        /// </summary>
+        /// <param name="guild_id">Guild id</param>
+        /// <param name="code">The template's code.</param>
+        /// <param name="name">Name of the template.</param>
+        /// <param name="description">Description of the template.</param>
+        /// <returns>The template modified.</returns>
+        public Task<DiscordGuildTemplate> ModifyGuildTemplateAsync(ulong guild_id, string code, string name = null, string description = null)
+            => this.ApiClient.ModifyGuildTemplateAsync(guild_id, code, name, description);
+
+        /// <summary>
+        /// Deletes the template.
+        /// </summary>
+        /// <param name="guild_id">Guild id</param>
+        /// <param name="code">The code of the template to delete.</param>
+        /// <returns>The deleted template.</returns>
+        public Task<DiscordGuildTemplate> DeleteGuildTemplateAsync(ulong guild_id, string code)
+            => this.ApiClient.DeleteGuildTemplateAsync(guild_id, code);
         #endregion
 
         #region Invites
@@ -1132,7 +1215,7 @@ namespace DSharpPlus
         /// <param name="builder">Webhook builder filled with data to send.</param>
         /// <returns></returns>
         public Task<DiscordMessage> ExecuteWebhookAsync(ulong webhook_id, string webhook_token, DiscordWebhookBuilder builder)
-            => this.ApiClient.ExecuteWebhookAsync(webhook_id, webhook_token, builder.Content, builder.Username, builder.AvatarUrl, builder.IsTTS, builder.Embeds, builder.Files, builder.Mentions);
+            => this.ApiClient.ExecuteWebhookAsync(webhook_id, webhook_token, builder.Content, builder.Username, builder.AvatarUrl, builder.IsTTS, builder.Embeds, builder._files, builder.Mentions);
         #endregion
 
         #region Reactions
@@ -1211,6 +1294,14 @@ namespace DSharpPlus
         /// <returns></returns>
         public Task<IReadOnlyList<DiscordApplicationAsset>> GetApplicationAssetsAsync(DiscordApplication application)
             => this.ApiClient.GetApplicationAssetsAsync(application);
+
+        /// <summary>
+        /// Gets a guild template by the code.
+        /// </summary>
+        /// <param name="code">The code of the template.</param>
+        /// <returns>The guild template for the code.</returns>\
+        public Task<DiscordGuildTemplate> GetTemplateAsync(string code)
+            => this.ApiClient.GetTemplateAsync(code);
         #endregion
 
         private bool disposed;

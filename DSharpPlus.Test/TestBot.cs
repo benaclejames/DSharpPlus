@@ -48,13 +48,15 @@ namespace DSharpPlus.Test
                 ShardId = shardid,
                 ShardCount = this.Config.ShardCount,
                 MessageCacheSize = 2048,
-                LogTimestampFormat = "dd-MM-yyyy HH:mm:ss zzz"
+                LogTimestampFormat = "dd-MM-yyyy HH:mm:ss zzz",
+                Intents = DiscordIntents.All // if 4013 is received, change to DiscordIntents.AllUnprivileged
             };
             Discord = new DiscordClient(dcfg);
 
             // events
             Discord.Ready += this.Discord_Ready;
             Discord.GuildAvailable += this.Discord_GuildAvailable;
+            Discord.PresenceUpdated += this.Discord_PresenceUpdated;
             //Discord.ClientErrored += this.Discord_ClientErrored;
             Discord.SocketErrored += this.Discord_SocketError;
             Discord.GuildCreated += this.Discord_GuildCreated;
@@ -66,7 +68,7 @@ namespace DSharpPlus.Test
             // For event timeout testing
             //Discord.GuildDownloadCompleted += async (s, e) =>
             //{
-            //    await Task.Delay(TimeSpan.FromSeconds(2));
+            //    await Task.Delay(TimeSpan.FromSeconds(2)).ConfigureAwait(false);
             //    throw new Exception("Flippin' tables");
             //};
 
@@ -112,8 +114,14 @@ namespace DSharpPlus.Test
             //    if (e.Message.Author.IsBot)
             //        return;
 
-            //    _ = Task.Run(async () => await e.Message.RespondAsync(e.Message.Content));
+            //    _ = Task.Run(async () => await e.Message.RespondAsync(e.Message.Content)).ConfigureAwait(false);
             //};
+        }
+
+        private Task Discord_PresenceUpdated(DiscordClient client, PresenceUpdateEventArgs e)
+        {
+            client.Logger.LogInformation(TestBotEventId, "Presence updated: '{0}'", e.Activity.Name);
+            return Task.CompletedTask;
         }
 
         public async Task RunAsync()
@@ -196,7 +204,7 @@ namespace DSharpPlus.Test
                 };
                 embed.WithFooter(Discord.CurrentUser.Username, Discord.CurrentUser.AvatarUrl)
                     .AddField("Message", ex.Message);
-                await e.Context.RespondAsync(embed: embed.Build());
+                await e.Context.RespondAsync(embed: embed.Build()).ConfigureAwait(false);
             }
         }
 

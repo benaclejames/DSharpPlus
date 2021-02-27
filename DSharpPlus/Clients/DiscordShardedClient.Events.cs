@@ -76,6 +76,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a new channel is created.
+        /// For this Event you need the <see cref="DiscordIntents.Guilds"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ChannelCreateEventArgs> ChannelCreated
         {
@@ -85,17 +86,8 @@ namespace DSharpPlus
         private AsyncEvent<DiscordClient, ChannelCreateEventArgs> _channelCreated;
 
         /// <summary>
-        /// Fired when a new direct message channel is created.
-        /// </summary>
-        public event AsyncEventHandler<DiscordClient, DmChannelCreateEventArgs> DmChannelCreated
-        {
-            add => this._dmChannelCreated.Register(value);
-            remove => this._dmChannelCreated.Unregister(value);
-        }
-        private AsyncEvent<DiscordClient, DmChannelCreateEventArgs> _dmChannelCreated;
-
-        /// <summary>
         /// Fired when a channel is updated.
+        /// For this Event you need the <see cref="DiscordIntents.Guilds"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ChannelUpdateEventArgs> ChannelUpdated
         {
@@ -106,6 +98,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a channel is deleted
+        /// For this Event you need the <see cref="DiscordIntents.Guilds"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ChannelDeleteEventArgs> ChannelDeleted
         {
@@ -116,6 +109,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a dm channel is deleted
+        /// For this Event you need the <see cref="DiscordIntents.DirectMessages"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, DmChannelDeleteEventArgs> DmChannelDeleted
         {
@@ -126,6 +120,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired whenever a channel's pinned message list is updated.
+        /// For this Event you need the <see cref="DiscordIntents.Guilds"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, ChannelPinsUpdateEventArgs> ChannelPinsUpdated
         {
@@ -140,6 +135,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when the user joins a new guild.
+        /// For this Event you need the <see cref="DiscordIntents.Guilds"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         /// <remarks>[alias="GuildJoined"][alias="JoinedGuild"]</remarks>
         public event AsyncEventHandler<DiscordClient, GuildCreateEventArgs> GuildCreated
@@ -161,6 +157,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a guild is updated.
+        /// For this Event you need the <see cref="DiscordIntents.Guilds"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildUpdateEventArgs> GuildUpdated
         {
@@ -171,6 +168,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when the user leaves or is removed from a guild.
+        /// For this Event you need the <see cref="DiscordIntents.Guilds"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildDeleteEventArgs> GuildDeleted
         {
@@ -201,6 +199,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a guilds emojis get updated
+        /// For this Event you need the <see cref="DiscordIntents.GuildEmojis"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildEmojisUpdateEventArgs> GuildEmojisUpdated
         {
@@ -225,6 +224,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a guild ban gets added
+        /// For this Event you need the <see cref="DiscordIntents.GuildBans"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildBanAddEventArgs> GuildBanAdded
         {
@@ -235,6 +235,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a guild ban gets removed
+        /// For this Event you need the <see cref="DiscordIntents.GuildBans"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildBanRemoveEventArgs> GuildBanRemoved
         {
@@ -249,6 +250,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a new user joins a guild.
+        /// For this Event you need the <see cref="DiscordIntents.GuildMembers"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildMemberAddEventArgs> GuildMemberAdded
         {
@@ -259,6 +261,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a user is removed from a guild (leave/kick/ban).
+        /// For this Event you need the <see cref="DiscordIntents.GuildMembers"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildMemberRemoveEventArgs> GuildMemberRemoved
         {
@@ -269,6 +272,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a guild member is updated.
+        /// For this Event you need the <see cref="DiscordIntents.GuildMembers"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildMemberUpdateEventArgs> GuildMemberUpdated
         {
@@ -293,6 +297,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a guild role is created.
+        /// For this Event you need the <see cref="DiscordIntents.Guilds"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildRoleCreateEventArgs> GuildRoleCreated
         {
@@ -303,6 +308,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a guild role is updated.
+        /// For this Event you need the <see cref="DiscordIntents.Guilds"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildRoleUpdateEventArgs> GuildRoleUpdated
         {
@@ -313,6 +319,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a guild role is updated.
+        /// For this Event you need the <see cref="DiscordIntents.Guilds"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, GuildRoleDeleteEventArgs> GuildRoleDeleted
         {
@@ -327,6 +334,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when an invite is created.
+        /// For this Event you need the <see cref="DiscordIntents.GuildInvites"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, InviteCreateEventArgs> InviteCreated
         {
@@ -337,6 +345,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when an invite is deleted.
+        /// For this Event you need the <see cref="DiscordIntents.GuildInvites"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, InviteDeleteEventArgs> InviteDeleted
         {
@@ -351,6 +360,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a message is created.
+        /// For this Event you need the <see cref="DiscordIntents.GuildMessages"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageCreateEventArgs> MessageCreated
         {
@@ -361,6 +371,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a message is updated.
+        /// For this Event you need the <see cref="DiscordIntents.GuildMessages"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageUpdateEventArgs> MessageUpdated
         {
@@ -371,6 +382,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a message is deleted.
+        /// For this Event you need the <see cref="DiscordIntents.GuildMessages"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageDeleteEventArgs> MessageDeleted
         {
@@ -381,6 +393,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when multiple messages are deleted at once.
+        /// For this Event you need the <see cref="DiscordIntents.GuildMessages"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageBulkDeleteEventArgs> MessagesBulkDeleted
         {
@@ -395,6 +408,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a reaction gets added to a message.
+        /// For this Event you need the <see cref="DiscordIntents.GuildMessageReactions"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageReactionAddEventArgs> MessageReactionAdded
         {
@@ -405,6 +419,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a reaction gets removed from a message.
+        /// For this Event you need the <see cref="DiscordIntents.GuildMessageReactions"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageReactionRemoveEventArgs> MessageReactionRemoved
         {
@@ -415,6 +430,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when all reactions get removed from a message.
+        /// For this Event you need the <see cref="DiscordIntents.GuildMessageReactions"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageReactionsClearEventArgs> MessageReactionsCleared
         {
@@ -425,6 +441,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when all reactions of a specific reaction are removed from a message.
+        /// For this Event you need the <see cref="DiscordIntents.GuildMessageReactions"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, MessageReactionRemoveEmojiEventArgs> MessageReactionRemovedEmoji
         {
@@ -439,6 +456,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a presence has been updated.
+        /// For this Event you need the <see cref="DiscordIntents.GuildPresences"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, PresenceUpdateEventArgs> PresenceUpdated
         {
@@ -450,6 +468,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when the current user updates their settings.
+        /// For this Event you need the <see cref="DiscordIntents.GuildPresences"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, UserSettingsUpdateEventArgs> UserSettingsUpdated
         {
@@ -460,6 +479,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when properties about the current user change.
+        /// For this Event you need the <see cref="DiscordIntents.GuildPresences"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         /// <remarks>
         /// NB: This event only applies for changes to the <b>current user</b>, the client that is connected to Discord.
@@ -477,6 +497,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when someone joins/leaves/moves voice channels.
+        /// For this Event you need the <see cref="DiscordIntents.GuildVoiceStates"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, VoiceStateUpdateEventArgs> VoiceStateUpdated
         {
@@ -487,6 +508,7 @@ namespace DSharpPlus
 
         /// <summary>
         /// Fired when a guild's voice server is updated.
+        /// For this Event you need the <see cref="DiscordIntents.GuildVoiceStates"/> intent specified in <seealso cref="DiscordConfiguration.Intents"/>
         /// </summary>
         public event AsyncEventHandler<DiscordClient, VoiceServerUpdateEventArgs> VoiceServerUpdated
         {
@@ -580,9 +602,6 @@ namespace DSharpPlus
 
         private Task Client_ChannelCreated(DiscordClient client, ChannelCreateEventArgs e)
             => this._channelCreated.InvokeAsync(client, e);
-
-        private Task Client_DMChannelCreated(DiscordClient client, DmChannelCreateEventArgs e)
-            => this._dmChannelCreated.InvokeAsync(client, e);
 
         private Task Client_ChannelUpdated(DiscordClient client, ChannelUpdateEventArgs e)
             => this._channelUpdated.InvokeAsync(client, e);

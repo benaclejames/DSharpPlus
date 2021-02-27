@@ -51,6 +51,10 @@ namespace DSharpPlus.Interactivity.EventHandling
                 this._pages.Add(p);
             }
         }
+        
+        public int PageCount => _pages.Count;
+
+        public PaginationDeletion PaginationDeletion => _deletion;
 
         public async Task<Page> GetPageAsync()
         {
@@ -147,11 +151,11 @@ namespace DSharpPlus.Interactivity.EventHandling
             switch (_deletion)
             {
                 case PaginationDeletion.DeleteEmojis:
-                    await _message.DeleteAllReactionsAsync();
+                    await _message.DeleteAllReactionsAsync().ConfigureAwait(false);
                     break;
 
                 case PaginationDeletion.DeleteMessage:
-                    await _message.DeleteAsync();
+                    await _message.DeleteAsync().ConfigureAwait(false);
                     break;
 
                 case PaginationDeletion.KeepEmojis:

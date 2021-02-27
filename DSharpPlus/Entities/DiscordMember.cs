@@ -38,6 +38,7 @@ namespace DSharpPlus.Entities
             this.JoinedAt = mbr.JoinedAt;
             this.Nickname = mbr.Nickname;
             this.PremiumSince = mbr.PremiumSince;
+            this.IsPending = mbr.IsPending;
 
             this._role_ids = mbr.Roles ?? new List<ulong>();
             this._role_ids_lazy = new Lazy<IReadOnlyList<ulong>>(() => new ReadOnlyCollection<ulong>(this._role_ids));
@@ -113,6 +114,12 @@ namespace DSharpPlus.Entities
         /// </summary>
         [JsonProperty("is_muted", NullValueHandling = NullValueHandling.Ignore)]
         public bool IsMuted { get; internal set; }
+
+        /// <summary>
+        /// If the user has passed the guild's Membership Screening requirements
+        /// </summary>
+        [JsonProperty("pending", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? IsPending { get; internal set; }
 
         /// <summary>
         /// Gets this member's voice state.
@@ -258,105 +265,73 @@ namespace DSharpPlus.Entities
         /// Sends a direct message to this member. Creates a direct message channel if one does not exist already.
         /// </summary>
         /// <param name="content">Content of the message to send.</param>
-        /// <param name="is_tts">Whether the message is to be read using TTS.</param>
-        /// <param name="embed">Embed to attach to the message.</param>
         /// <returns>The sent message.</returns>
         /// <exception cref="Exceptions.UnauthorizedException">Thrown when the member has the bot blocked, the member is no longer in the guild, or if the member has Allow DM from server members off.</exception>
         /// <exception cref="Exceptions.NotFoundException">Thrown when the member does not exist.</exception>
         /// <exception cref="Exceptions.BadRequestException">Thrown when an invalid parameter was provided.</exception>
         /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
-        public async Task<DiscordMessage> SendMessageAsync(string content = null, bool is_tts = false, DiscordEmbed embed = null)
+        public async Task<DiscordMessage> SendMessageAsync(string content)
         {
             if (this.IsBot && this.Discord.CurrentUser.IsBot)
                 throw new ArgumentException("Bots cannot DM each other.");
             
             var chn = await this.CreateDmChannelAsync().ConfigureAwait(false);
-            return await chn.SendMessageAsync(content, is_tts, embed).ConfigureAwait(false);
+            return await chn.SendMessageAsync(content).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Sends a direct message with a file attached to this member. Creates a direct message channel if one does not exist already.
+        /// Sends a direct message to this member. Creates a direct message channel if one does not exist already.
         /// </summary>
-        /// <param name="fileData">Stream containing the data to attach as a file.</param>
-        /// <param name="fileName">Name of the file to attach.</param>
-        /// <param name="content">Content of the message to send.</param>
-        /// <param name="is_tts">Whether the message is to be read using TTS.</param>
         /// <param name="embed">Embed to attach to the message.</param>
         /// <returns>The sent message.</returns>
         /// <exception cref="Exceptions.UnauthorizedException">Thrown when the member has the bot blocked, the member is no longer in the guild, or if the member has Allow DM from server members off.</exception>
         /// <exception cref="Exceptions.NotFoundException">Thrown when the member does not exist.</exception>
         /// <exception cref="Exceptions.BadRequestException">Thrown when an invalid parameter was provided.</exception>
         /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
-        public async Task<DiscordMessage> SendFileAsync(string fileName, Stream fileData, string content = null, bool is_tts = false, DiscordEmbed embed = null)
+        public async Task<DiscordMessage> SendMessageAsync(DiscordEmbed embed)
         {
             if (this.IsBot && this.Discord.CurrentUser.IsBot)
                 throw new ArgumentException("Bots cannot DM each other.");
-            
+
             var chn = await this.CreateDmChannelAsync().ConfigureAwait(false);
-            return await chn.SendFileAsync(fileName, fileData, content, is_tts, embed).ConfigureAwait(false);
+            return await chn.SendMessageAsync(embed).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Sends a direct message with a file attached to this member. Creates a direct message channel if one does not exist already.
+        /// Sends a direct message to this member. Creates a direct message channel if one does not exist already.
         /// </summary>
-        /// <param name="fileData">Stream containing the data to attach as a file.</param>
         /// <param name="content">Content of the message to send.</param>
-        /// <param name="is_tts">Whether the message is to be read using TTS.</param>
         /// <param name="embed">Embed to attach to the message.</param>
         /// <returns>The sent message.</returns>
         /// <exception cref="Exceptions.UnauthorizedException">Thrown when the member has the bot blocked, the member is no longer in the guild, or if the member has Allow DM from server members off.</exception>
         /// <exception cref="Exceptions.NotFoundException">Thrown when the member does not exist.</exception>
         /// <exception cref="Exceptions.BadRequestException">Thrown when an invalid parameter was provided.</exception>
         /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
-        public async Task<DiscordMessage> SendFileAsync(FileStream fileData, string content = null, bool is_tts = false, DiscordEmbed embed = null)
+        public async Task<DiscordMessage> SendMessageAsync(string content, DiscordEmbed embed)
         {
             if (this.IsBot && this.Discord.CurrentUser.IsBot)
                 throw new ArgumentException("Bots cannot DM each other.");
 
             var chn = await this.CreateDmChannelAsync().ConfigureAwait(false);
-            return await chn.SendFileAsync(fileData, content, is_tts, embed).ConfigureAwait(false);
+            return await chn.SendMessageAsync(content, embed).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Sends a direct message with a file attached to this member. Creates a direct message channel if one does not exist already.
+        /// Sends a direct message to this member. Creates a direct message channel if one does not exist already.
         /// </summary>
-        /// <param name="filePath">Path to the file to attach to the message.</param>
-        /// <param name="content">Content of the message to send.</param>
-        /// <param name="is_tts">Whether the message is to be read using TTS.</param>
-        /// <param name="embed">Embed to attach to the message.</param>
+        /// <param name="message">Builder to with the message.</param>
         /// <returns>The sent message.</returns>
         /// <exception cref="Exceptions.UnauthorizedException">Thrown when the member has the bot blocked, the member is no longer in the guild, or if the member has Allow DM from server members off.</exception>
         /// <exception cref="Exceptions.NotFoundException">Thrown when the member does not exist.</exception>
         /// <exception cref="Exceptions.BadRequestException">Thrown when an invalid parameter was provided.</exception>
         /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
-        public async Task<DiscordMessage> SendFileAsync(string filePath, string content = null, bool is_tts = false, DiscordEmbed embed = null)
+        public async Task<DiscordMessage> SendMessageAsync(DiscordMessageBuilder message)
         {
             if (this.IsBot && this.Discord.CurrentUser.IsBot)
                 throw new ArgumentException("Bots cannot DM each other.");
 
             var chn = await this.CreateDmChannelAsync().ConfigureAwait(false);
-            return await chn.SendFileAsync(filePath, content, is_tts, embed).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Sends a direct message with several files attached to this member. Creates a direct message channel if one does not exist already.
-        /// </summary>
-        /// <param name="files">Dictionary of filename to data stream containing the data to upload as files.</param>
-        /// <param name="content">Content of the message to send.</param>
-        /// <param name="is_tts">Whether the message is to be read using TTS.</param>
-        /// <param name="embed">Embed to attach to the message.</param>
-        /// <returns>The sent message.</returns>
-        /// <exception cref="Exceptions.UnauthorizedException">Thrown when the member has the bot blocked, the member is no longer in the guild, or if the member has Allow DM from server members off.</exception>
-        /// <exception cref="Exceptions.NotFoundException">Thrown when the member does not exist.</exception>
-        /// <exception cref="Exceptions.BadRequestException">Thrown when an invalid parameter was provided.</exception>
-        /// <exception cref="Exceptions.ServerErrorException">Thrown when Discord is unable to process the request.</exception>
-        public async Task<DiscordMessage> SendMultipleFilesAsync(Dictionary<string, Stream> files, string content = null, bool is_tts = false, DiscordEmbed embed = null)
-        {
-            if (this.IsBot && this.Discord.CurrentUser.IsBot)
-                throw new ArgumentException("Bots cannot DM each other.");
-
-            var chn = await this.CreateDmChannelAsync().ConfigureAwait(false);
-            return await chn.SendMultipleFilesAsync(files, content, is_tts, embed).ConfigureAwait(false);
+            return await chn.SendMessageAsync(message).ConfigureAwait(false);
         }
 
         /// <summary>
