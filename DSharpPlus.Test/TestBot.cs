@@ -13,6 +13,7 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.Lavalink;
+using DSharpPlus.Net;
 using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -64,6 +65,7 @@ namespace DSharpPlus.Test
             Discord.GuildDownloadCompleted += this.Discord_GuildDownloadCompleted;
             Discord.GuildUpdated += this.Discord_GuildUpdated;
             Discord.ChannelDeleted += this.Discord_ChannelDeleted;
+            Discord.InteractionTriggered += this.Discord_InteractionTriggered;
 
             // For event timeout testing
             //Discord.GuildDownloadCompleted += async (s, e) =>
@@ -126,8 +128,8 @@ namespace DSharpPlus.Test
 
         public async Task RunAsync()
         {
-			var act = new DiscordActivity("the screams of your ancestors", ActivityType.ListeningTo);
-            await Discord.ConnectAsync(act, UserStatus.DoNotDisturb).ConfigureAwait(false);
+			var act = new DiscordActivity("s!help", ActivityType.ListeningTo);
+            await Discord.ConnectAsync(act, UserStatus.Online).ConfigureAwait(false);
         }
 
         public async Task StopAsync()
@@ -268,6 +270,26 @@ namespace DSharpPlus.Test
             foreach (var entry in logs)
             {
                 Console.WriteLine("TargetId: " + entry.Target.Id);
+            }
+        }
+
+        private async Task Discord_InteractionTriggered(DiscordClient client, InteractionTriggeredEventArgs e)
+        {
+            try
+            {
+                var embed = new DiscordEmbedBuilder()
+                {
+                    Title = "PogChamp!",
+                    Description = "Here's the metadata received for that command:",
+                };
+                foreach (var element in e.Interaction.Params.Options)
+                    embed.AddField(element.Key, element.Value);
+                var resp = new DiscordInteractionResponse(embed: embed);
+                await e.Interaction.Respond(resp);
+            }
+            catch (Exception ee)
+            {
+                Console.WriteLine(ee.Message);
             }
         }
     }
